@@ -56,8 +56,8 @@ Authentication, Product Management, Cart Management, Checkout, Session Managemen
 
 Mark NOT READY if any suite runner is missing.
 
-#### TestNG Suite Files (always exactly 6 — fixed)
-`testng.xml`, `smoke-testng.xml`, `sanity-testng.xml`, `regression-testng.xml`, `integration-testng.xml`, `retest-testng.xml`
+#### TestNG Suite Files -
+`testng.xml` just one testng.xml to run the whole folder
 
 Mark NOT READY if any suite file is missing.
 
