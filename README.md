@@ -13,4 +13,22 @@ This repo is having all the AI agents required for automation testings
 
 - mcp.json - This file needs to be in the root directory of the repo and contains the configuration for the agents and this should not be pushed in the repo.
 - There is a placeholder for the jira and the gitlab tickets and rest of the steps are in the attached documents.
-- 
+
+# PROMPTS:-
+
+
+-**To run the test documentation agent** - 
+Use this agent to generate the test plan and test cases for the aiservice-qa/src/test/resources/artifacts/EPMICMPCOD-354
+We can use this agent separately for generating test cases for any user story or acceptance criteria or SRS document. We just need to provide the input document and the output will be generated in the test-documents folder. The agent will read the input document, generate the test cases and test plan based on the behaviours defined in the UI_Test_Behaviour.md and API_Test_Behaviour.md files and then populate the templates with the generated content. Finally, it will verify the generated documents and clean up any temporary files created during the process.
+we can even use it to generate test cases , test strategy and test plan separately.
+
+**To Run the BDD agent full pipeline**
+
+Use this agent and run the full pipeline for the user stories- <user stories> .
+
+**To Run the BDD agent upto any steps**
+
+Use this agent and run the pipeline upto step (1,2,3) for the user stories- <user stories> .
+step 1 - Will pull the user stories from the jira board.
+step 2 - Will generate the QA subtasks
+step 3 - Will generate the BDD structure and code.
