@@ -22,12 +22,13 @@ The generated subtasks must:
 
 1. Cover the complete testing scope of the user story
 2. Map directly to acceptance criteria and business rules
-3. Be categorised into QA activities such as test design, test data preparation, execution, validation, and automation
+3. Be categorised primarily into automation-focused QA activities such as Selenium UI automation, RestAssured API automation, integration automation, and validation automation.  and manual validation activities should only be generated when required and should remain secondary to automation tasks.
 4. Include all fields required for Jira board creation
 5. Be linked to the parent user story
 6. Be structured so the Jira Sync Agent can directly create them in Jira without further interpretation
 
 ---
+
 ## Additional Output Requirement: Human-Readable QA Document
 
 In addition to JSON artifact generation, the agent must also generate a human-readable QA Subtask Document for each processed user story.
@@ -143,66 +144,49 @@ If optional fields are absent, the agent may still generate subtasks using the a
 
 ## QA Subtask Categories
 
+
+
 Every subtask must belong to exactly one of the following QA activity categories. The category is recorded in the `testingType` field.
 
-### 1. Test Design
 
-- Identify test scenarios from acceptance criteria and business rules
-- Design positive, negative, and edge-case test cases
-- Review and baseline test case documentation
+### 1. UI Automation Testing (Primary Priority)
 
-### 2. Test Data Preparation
+*Apply when the user story involves user-facing UI workflows.*
 
-- Create valid and invalid input datasets
-- Prepare boundary value and edge-case data
-- Set up prerequisite system state required for test execution
+- Create detailed Selenium BDD UI automation test cases and automation scenarios
+- Cover positive, negative, validation, and edge-case UI scenarios
+- Prepare required UI automation test data wherever applicable
+- Validate UI elements, labels, navigation, redirects, and user actions
+- Validate success and error message handling
+- Create/update Page Objects, Step Definitions, and Feature Scenarios where applicable
 
-### 3. Test Execution — Manual
+### 2. API Automation Testing (Primary Priority)
+
+*Apply when the user story involves backend or API-level behaviour.*
+
+- Create detailed RestAssured API automation test cases and automation scenarios
+- Cover positive, negative, validation, and edge-case API scenarios
+- Prepare API request payloads and required automation test data wherever applicable
+- Validate HTTP request/response structures
+- Validate status codes for success and failure scenarios
+- Validate payload schema, tokens, authentication, and field-level constraints
+- Validate backend business logic and integrations
+
+### 3. Test Execution — Manual(if required)
 
 - Execute manual test cases against the acceptance criteria
 - Validate system behaviour end-to-end
 - Record actual vs. expected results
 
-### 4. API Testing
+### 4. Acceptance Criteria Coverage (Mandatory)
 
-*Apply only when the user story involves API-level behaviour.*
-
-- Validate HTTP request and response structures
-- Validate status codes for success and error paths
-- Validate payload schema and field-level constraints
-
-### 5. UI Testing
-
-*Apply only when the user story involves user-facing UI.*
-
-- Validate UI elements, labels, and layout
-- Validate error and success messages
-- Validate user workflows and navigation
-
-### 6. Validation and Business Rules
-
-- Validate all business rules stated in the user story
-- Validate constraints, restrictions, and allowed/disallowed states
-- Validate edge conditions defined by business rules
-
-### 7. Regression Testing
-
-- Verify that existing functionality is not broken by the new story
-- Execute regression test cases relevant to the affected area
-
-### 8. Automation
-
-*Apply only when the story is in scope for test automation.*
-
-- Create or update automation test scripts
-- Map test scenarios to BDD / Gherkin format if applicable
-- Integrate automated tests into the CI pipeline
-
-### 9. Defect Handling
-
-- Log defects discovered during test execution
-- Retest defect fixes and verify resolution
-- Update test case outcomes after defect closure
+- Generated subtasks must collectively validate the complete functional flow of the user story
+- Subtasks must include positive, negative, validation, and edge-case scenarios wherever applicable
+- UI-related acceptance criteria must generate Selenium BDD automation subtasks wherever applicable
+- API/backend-related acceptance criteria must generate RestAssured automation subtasks wherever applicable
+- If both UI and backend flows are involved, generate both Selenium and RestAssured automation subtasks
+- Manual testing subtasks should only be generated when automation is not feasible or additional exploratory validation is required
+- No acceptance criterion or business rule should remain uncovered
 
 ---
 
@@ -229,17 +213,18 @@ If a candidate subtask falls into any of the above categories, it must be discar
 
 ## Subtask Count Guidelines
 
-The number of QA subtasks per user story should reflect the story's complexity and testing scope.
+## Subtask Generation Guidelines
 
-| Story Points | Suggested QA Subtask Count |
-|-------------|---------------------------|
-| 1 | 2–3 subtasks |
-| 2 | 3–4 subtasks |
-| 3 | 4–5 subtasks |
-| 5 | 5–7 subtasks |
-| 8 | 7–10 subtasks |
-
-These are guidelines, not hard rules. Full coverage of all acceptance criteria and business rules takes priority over subtask count targets. Every acceptance criterion must be covered by at least one subtask.
+* Generate subtasks based on the actual automation and testing needs of the user story.
+* Do not force a fixed number of subtasks for every story.
+* Every acceptance criterion and business rule must be covered through appropriate QA subtasks.
+* Generate UI Automation subtasks for frontend and user-facing workflows.
+* Generate API Automation subtasks for backend, API, authentication, integration, and business logic workflows.
+* Generate both UI and API subtasks when both layers require validation.
+* If a story cannot be automated reliably, generate Manual Execution subtasks only.
+* If the automation scope is large, split UI or API automation into multiple focused subtasks.
+* Avoid unnecessary or duplicate subtasks.
+* Include positive, negative, validation, edge-case, authentication, and integration scenarios within the relevant automation subtask wherever applicable.
 
 ---
 
@@ -410,14 +395,11 @@ For each subtask:
 
 ### Execution Flow
 
-Subtasks must be presented in execution order based on dependencies:
+Subtasks must be presented in execution and automation implementation order based on dependencies:
 
-1. Test Design
-2. Test Data Preparation
-3. Execution
-4. Validation
-5. Automation
-6. Defect Handling
+1. UI Automation Testing (Selenium BDD)
+2. API Automation Testing (RestAssured BDD)
+3. Test Execution — Manual (only if automation is not feasible)
 
 ---
 
@@ -458,34 +440,35 @@ The `subtasks/` subfolder must be created under the existing QA epic folder. Do 
 
 The `testingType` field must be set to exactly one of the following values:
 
-| Value | When to Use |
-|-------|-------------|
-| `"Test Design"` | Test case design and scenario identification |
-| `"Test Data Preparation"` | Dataset creation, boundary data, prerequisites |
-| `"Manual Execution"` | Manual test execution and result recording |
-| `"API Testing"` | API request/response, status code, payload validation |
-| `"UI Testing"` | Frontend element, workflow, and message validation |
-| `"Business Rules Validation"` | Constraint and business rule verification |
-| `"Regression Testing"` | Verification that existing functionality is unaffected |
-| `"Automation"` | Test script creation, BDD mapping, CI integration |
-| `"Defect Handling"` | Defect logging, retesting, and closure verification |
 
-The value must be a string matching one of the above exactly.
+1. "UI Automation Testing"
+   - Selenium BDD automation for UI workflows, validations, navigation, redirects, user actions, and message handling
+
+2. "API Automation Testing"
+   - RestAssured automation for API validations, status codes, payload validation, authentication, tokens, integrations, and backend business logic
+
+3. "Manual Execution"
+   - Generate only when automation is not feasible
 
 ---
 
 ## Dependency Rules
 
-- If a QA subtask logically cannot start before another subtask in the same story is complete, record the predecessor `subtaskId` in the `dependencies` array
-- Standard QA activity ordering (earlier activities should be listed as dependencies of later ones):
-  1. Test Design must precede Test Data Preparation
-  2. Test Data Preparation must precede Test Execution
-  3. Test Execution must precede Automation
-  4. Test Execution must precede Defect Handling
-  5. API Testing may depend on Test Design
-  6. UI Testing may depend on Test Design
-- Circular dependencies are not permitted
-- Cross-story dependencies must NOT be recorded in subtask files
+Add dependencies only when one automation subtask truly requires another automation flow to be completed first.
+Most UI and API automation subtasks should remain independently executable whenever possible.
+
+Examples:
+
+End-to-end UI automation may depend on stable authentication APIs.
+Workflow automation depending on backend setup may reference related API automation subtasks.
+
+Rules:
+
+Avoid unnecessary dependency chains.
+Do not create dependencies for validation-only, regression-only, or coverage-only activities.
+Circular dependencies are not permitted.
+Cross-story dependencies must NOT be added.
+If UI and API automation can run independently, keep the dependencies array empty.
 
 ---
 
@@ -494,17 +477,11 @@ The value must be a string matching one of the above exactly.
 Map `assigneeHint` based on the QA activity type:
 
 | Subtask / Testing Type | Assignee Hint |
-|-----------------------|---------------|
-| Test Design | `"QA Engineer"` |
-| Test Data Preparation | `"QA Engineer"` |
+| UI Automation Testing | `"SDET"` |
+| API Automation Testing | `"SDET"` |
 | Manual Execution | `"QA Engineer"` |
-| API Testing | `"QA Engineer"` or `"SDET"` |
-| UI Testing | `"QA Engineer"` |
-| Business Rules Validation | `"QA Engineer"` |
-| Regression Testing | `"QA Engineer"` |
-| Automation | `"SDET"` |
-| Defect Handling | `"QA Engineer"` |
-| Complex multi-layer validation | `"QA Lead"` |
+| Complex Selenium + RestAssured multi-layer validation | `"QA Lead"` |
+
 
 ---
 
@@ -517,7 +494,7 @@ Before saving any output, verify:
 3. Every subtask has a non-empty `title`, `summary`, and `description`
 4. `jiraIssueType` is exactly `"Sub-task"` for every subtask
 5. `status` is exactly `"To Do"` for every subtask
-6. `testingType` is set to one of the nine permitted values
+6. `testingType` is set to one of the five permitted values
 7. Every label array contains at least `"qa"`
 8. `assigneeHint` is a QA role — no developer role hints are permitted
 9. `reporterHint` is exactly `"QA Subtask Agent"` for every subtask
